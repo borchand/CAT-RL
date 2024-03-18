@@ -5,17 +5,17 @@ from src.envs.wumpusworld import *
 from src.envs.mountaincar import *
 
 # Mountain Car
-#epsilon_min = 0.01
-#alpha = 0.05
-#decay = 0.9
-#gamma = 0.99
-#lam = 0.5
-#k_cap = 1
-#step_max = 200
-#episode_max = 2500
-#map_name = "Mountain_Car"
-#env = Mountain_Car()
-#bootstrap = 'from_ancestor'
+epsilon_min = 0.01
+alpha = 0.05
+decay = 0.9
+gamma = 0.99
+lam = 0.5
+k_cap = 1
+step_max = 200
+episode_max = 2500
+map_name = "Mountain_Car"
+env = Mountain_Car()
+bootstrap = 'from_ancestor'
 
 # grid domain 64 64
 #epsilon_min = 0.05
@@ -46,17 +46,17 @@ from src.envs.mountaincar import *
 
 
 # grid domain 32 32
-epsilon_min = 0.05
-alpha = 0.05
-decay = 0.9991
-gamma = 0.95
-lam = 0.5
-k_cap = 20
-step_max = 600
-episode_max = 5000
-map_name = "grid_32x32_map1"
-env = Simple_Grid (map_name, [0,0], [31,31])
-bootstrap = 'from_concrete'
+# epsilon_min = 0.05
+# alpha = 0.05
+# decay = 0.9991
+# gamma = 0.95
+# lam = 0.5
+# k_cap = 20
+# step_max = 600
+# episode_max = 5000
+# map_name = "grid_32x32_map1"
+# env = Simple_Grid (map_name, [0,0], [31,31])
+# bootstrap = 'from_concrete'
 
 
 # grid domain 16 16
