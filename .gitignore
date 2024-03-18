@@ -342,3 +342,4 @@ healthchecksdb
 .zip
 .csv
 ./results/*
+venv/
