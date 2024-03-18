@@ -4,6 +4,7 @@ import gym
 
 class Mountain_Car:
     def __init__(self):
+        self._state_size = 1
         self._env = gym.make ('MountainCar-v0')
         self._action_space = self._env.action_space
         self._action_size = 3
@@ -26,7 +27,7 @@ class Mountain_Car:
         self._env.seed(seed)
 
     def step (self, action_index):
-        new_state, reward, done, _ = self._env.step(action_index)
+        new_state, reward, done, _, _ = self._env.step(action_index)
         new_state = np.clip(new_state, a_min=self._env.observation_space.low, a_max=self._env.observation_space.high)
         self.log_r.append(reward)
         success = False
@@ -40,7 +41,7 @@ class Mountain_Car:
 
     def reset (self):
         start_state = self._env.reset()
-        return self.scale_state(start_state.tolist())
+        return self.scale_state(start_state[0].tolist())
 
     def scale_state (self, state):
         for i in range (len(state)):
