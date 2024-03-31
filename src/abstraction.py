@@ -9,7 +9,7 @@ from src.results import Results
 from src.learning import *
 
 class Abstraction:
-    def __init__(self, env, n_state_variables, state_variable_ranges, n_action_size, agent_con, agent, k_cap = hyper_param.k_cap, boot_type = 'from_init'):
+    def __init__(self, env, n_state_variables, state_variable_ranges, n_action_size, agent_con, agent, k_cap, boot_type = 'from_init'):
         self._env = env
         if hyper_param.bootstrap == 'from_concrete': 
             self._maze_abstract = np.chararray(self._env._maze.shape, itemsize = 100 ,unicode=True)
