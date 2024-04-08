@@ -67,6 +67,7 @@ def train_CAT_RL(
         alpha: float,
         epsilon_min: float,
         decay: float,
+        k_cap: int,
         epsilon: float = 1,
         seeds: list[int] = None,
         approach_name: str = "adrl",
@@ -83,6 +84,7 @@ def train_CAT_RL(
     :param alpha: the learning rate
     :param epsilon_min: the minimum value of epsilon
     :param decay: the decay rate of epsilon
+    :param k_cap: the maximum number of abstractions
     :param epsilon: the initial value of epsilon
     :param seeds: the seeds for the random number generator. The length of the list is the number of trials. If None, the number of seeds is randomly generated based on trials.
     :param approach_name: the name of the approach
@@ -97,6 +99,15 @@ def train_CAT_RL(
     abstraction_colors = dict()
     best_actions = dict()
 
+    log_data = {
+                    "episode": [],
+                    "reward": [],
+                    "epochs": [],
+                    "epsilon": [],
+                    "abs_size": [],
+                    "rate": [],
+                    "success": []
+                }
 
     if seeds is None:
         seeds = random.sample(range(1, 1000), trials)
@@ -133,7 +144,7 @@ def train_CAT_RL(
         # agent_con = None
         abstract = Abstraction(env = env, n_state_variables = env._n_state_variables, 
                             state_variable_ranges = env._state_ranges, n_action_size = env._action_size, 
-                            agent_con = agent_con, agent = agent, boot_type = boot)
+                            agent_con = agent_con, agent = agent, k_cap=k_cap, boot_type = boot)
 
         agent._abstract = abstract
 
@@ -184,6 +195,13 @@ def train_CAT_RL(
                     + '\t' + "epsilon: " + str(round(agent._epsilon,3)) + '\t' +   "abs size: " + str(abstract._n_abstract_states) 
                     + '\t' + "rate: " + str (round (recent_success,2)) + '\t' + "success: " + str(success))
 
+            log_data["episode"].append(i)
+            log_data["reward"].append(reward)
+            log_data["epochs"].append(epoch)
+            log_data["epsilon"].append(agent._epsilon)
+            log_data["abs_size"].append(abstract._n_abstract_states)
+            log_data["rate"].append(recent_success)
+            log_data["success"].append(success)
     #_______________________________________________________________________________________
             agent = evaluate(i, agent, test_abs_every, step_max, env, abstract)
     #______________________________________________________________________________________
@@ -241,16 +259,16 @@ def train_CAT_RL(
 
         #Results.get_full_image(env._maze, abstract._maze_abstract, 40)
         # abstraction_colors, best_actions = abstract.plot_all_heatmaps(heatmaps_directory, abstraction_colors, best_actions)
-        log.save_execution (file_name)
+        # log.save_execution (file_name)
         # log.plot_learning(100, "success") 
-        log.save_acc_rewards(file_name, agent._acc_reward_data)
+        # log.save_acc_rewards(file_name, agent._acc_reward_data)
 
         # for filename,timetaken in env_alg_to_time.items():
         #     print(filename+":"+str(timetaken))
         print("Time mean:",np.mean(list(env_alg_to_time.values())))
         print("Time std:",np.std(list(env_alg_to_time.values())))
 
-        return agent, abstract
+        return agent, abstract, log_data
 
 def main():
     train_CAT_RL(
