@@ -11,7 +11,7 @@ from src.learning import *
 class Abstraction:
     def __init__(self, env, n_state_variables, state_variable_ranges, n_action_size, agent_con, agent, k_cap, boot_type = 'from_init'):
         self._env = env
-        if hyper_param.bootstrap == 'from_concrete': 
+        if boot_type == 'from_concrete': 
             self._maze_abstract = np.chararray(self._env._maze.shape, itemsize = 100 ,unicode=True)
             self._maze_abstract[:] = ''
         self._n_states = n_state_variables
@@ -27,7 +27,7 @@ class Abstraction:
         self._tree = Abstraction_Tree (root_split = self._split, root_abs_state = self._root_name)
         self.initialize_tree()
         self.update_n_abstract_state ()
-        if hyper_param.bootstrap == 'from_concrete': self.update_abstract_maze ()
+        if boot_type == 'from_concrete': self.update_abstract_maze ()
         self._gen_pool = []
         self._current_counter_examples = []
         self._k = k_cap
@@ -233,7 +233,7 @@ class Abstraction:
             for s in unstable_states:
                 self.update_tree (s)
             self.update_n_abstract_state ()
-            if hyper_param.bootstrap == 'from_concrete': self.update_abstract_maze ()
+            if self._bootstrap_mode == 'from_concrete': self.update_abstract_maze ()
 
     def clean_eval(self, eval_in):
         eval = deepcopy(eval_in)
