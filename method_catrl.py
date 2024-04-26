@@ -69,9 +69,8 @@ def train_CAT_RL(
         decay: float,
         k_cap: int,
         epsilon: float = 1,
-        seeds: list[int] = None,
+        seed: int = None,
         approach_name: str = "adrl",
-        trials: int = 1
 ):
     """
     Train the agent using the CAT RL algorithm
@@ -86,9 +85,8 @@ def train_CAT_RL(
     :param decay: the decay rate of epsilon
     :param k_cap: the maximum number of abstractions
     :param epsilon: the initial value of epsilon
-    :param seeds: the seeds for the random number generator. The length of the list is the number of trials. If None, the number of seeds is randomly generated based on trials.
+    :param seed: the seed for the random number generator. If None, the number of seeds is randomly generated.
     :param approach_name: the name of the approach
-    :param trials: the number of trials. If seeds is not None, this parameter is ignored.
 
     """
     basepath = os.getcwd()
@@ -100,21 +98,33 @@ def train_CAT_RL(
     best_actions = dict()
 
     log_data = {
-                    "episode": [],
-                    "reward": [],
-                    "epochs": [],
-                    "epsilon": [],
-                    "abs_size": [],
-                    "rate": [],
-                    "success": []
-                }
+        "episode": [],
+        "reward": [],
+        "epochs": [],
+        "epsilon": [],
+        "abs_size": [],
+        "rate": [],
+        "success": []
+    }
 
-    if seeds is None:
-        seeds = random.sample(range(1, 1000), trials)
+    log_info = {
+        "seed": [],
+        "time": [],
+        "agent": [],
+        "env": [],
+        "episodes": [],
+        "epochs": [],
+        "success_rate": [],
+        "abs_size": []
+    }
 
-    for trial in range(len(seeds)):
+    if seed is None:
+        seed = random.sample(range(1, 1000), 1)[0]
+
+    start_time = time.time()
+
+    for trial in range(1):
         # ____________ main Parameters ___________________________
-        seed = seeds[trial]
         random.seed(seed)
         approach_name = 'adrl'
         file_name = map_name + "_" + approach_name + "_" + str(trial)
@@ -254,21 +264,25 @@ def train_CAT_RL(
                 if boot == 'from_concrete': agent_con.batch_train(batch_con)
                 abstract.update_abstraction (agent._eval)
 
+        end_time = time.time()
+
         env_alg_to_time[file_name] = float(round((time.time() - start_time),2))
         print("Time taken for "+str(file_name)+"(s):"+str(env_alg_to_time[file_name]))
 
-        #Results.get_full_image(env._maze, abstract._maze_abstract, 40)
-        # abstraction_colors, best_actions = abstract.plot_all_heatmaps(heatmaps_directory, abstraction_colors, best_actions)
-        # log.save_execution (file_name)
-        # log.plot_learning(100, "success") 
-        # log.save_acc_rewards(file_name, agent._acc_reward_data)
-
-        # for filename,timetaken in env_alg_to_time.items():
-        #     print(filename+":"+str(timetaken))
         print("Time mean:",np.mean(list(env_alg_to_time.values())))
         print("Time std:",np.std(list(env_alg_to_time.values())))
 
-        return agent, abstract, log_data
+
+        log_info["seed"].append(seed)
+        log_info["time"].append(end_time - start_time)
+        log_info["agent"].append("CAT-RL")
+        log_info["env"].append(map_name)
+        log_info["episodes"].append(episodes)
+        log_info["epochs"].append(sum(log_data["epochs"]))
+        log_info["success_rate"].append(sum(log_data["success"]) / len(log_data["success"]))
+        log_info["abs_size"].append(log_data["abs_size"][-1])
+
+        return agent, abstract, log_data, log_info
 
 def main():
     train_CAT_RL(
