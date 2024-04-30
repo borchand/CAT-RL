@@ -71,6 +71,7 @@ def train_CAT_RL(
         epsilon: float = 1,
         seed: int = None,
         approach_name: str = "adrl",
+        verbose: bool = False
 ):
     """
     Train the agent using the CAT RL algorithm
@@ -160,7 +161,7 @@ def train_CAT_RL(
 
         test_abs_every = 10
         eval_episodes = 100
-        do_abs_every = 100
+        do_abs_every = 500
         log = Log_experiments(lp =do_abs_every, ep = eval_episodes)
         agent._acc_reward_data["Num_episodes"] = list()
         agent._acc_reward_data["Cumulative_rewards"] = list()
@@ -200,10 +201,11 @@ def train_CAT_RL(
             log.log_episode(reward, success, epoch)
             recent_success = log.recent_success_rate(do_abs_every)
             succ.append(recent_success)
-            print ("_______________________________")
-            print ("episode: " + str(i) + '\t' + "reward: " + str (reward) + '\t' + "epochs: " + str(epoch) 
-                    + '\t' + "epsilon: " + str(round(agent._epsilon,3)) + '\t' +   "abs size: " + str(abstract._n_abstract_states) 
-                    + '\t' + "rate: " + str (round (recent_success,2)) + '\t' + "success: " + str(success))
+            if verbose:
+                print ("_______________________________")
+                print ("episode: " + str(i) + '\t' + "reward: " + str (reward) + '\t' + "epochs: " + str(epoch) 
+                        + '\t' + "epsilon: " + str(round(agent._epsilon,3)) + '\t' +   "abs size: " + str(abstract._n_abstract_states) 
+                        + '\t' + "rate: " + str (round (recent_success,2)) + '\t' + "success: " + str(success))
 
             log_data["episode"].append(i)
             log_data["reward"].append(reward)
@@ -255,6 +257,19 @@ def train_CAT_RL(
                         state = new_state
                         state_abs = new_state_abs
                         reward += r
+                    if verbose:
+                        print ("_______________________________")
+                        print ("episode: " + str(i) + '\t' + "reward: " + str (reward) + '\t' + "epochs: " + str(epoch) 
+                        + '\t' + "epsilon: " + str(round(agent._epsilon,3)) + '\t' +   "abs size: " + str(abstract._n_abstract_states) 
+                        + '\t' + "rate: " + str (round (recent_success,2)) + '\t' + "success: " + str(success))
+
+                    log_data["episode"].append(i)
+                    log_data["reward"].append(reward)
+                    log_data["epochs"].append(epoch)
+                    log_data["epsilon"].append(agent._epsilon)
+                    log_data["abs_size"].append(abstract._n_abstract_states)
+                    log_data["rate"].append(recent_success)
+                    log_data["success"].append(success)
                                         
                     log.log_episode(reward, success, epoch)
                     agent = evaluate(i, agent, test_abs_every, step_max, env, abstract)
@@ -267,10 +282,12 @@ def train_CAT_RL(
         end_time = time.time()
 
         env_alg_to_time[file_name] = float(round((time.time() - start_time),2))
-        print("Time taken for "+str(file_name)+"(s):"+str(env_alg_to_time[file_name]))
 
-        print("Time mean:",np.mean(list(env_alg_to_time.values())))
-        print("Time std:",np.std(list(env_alg_to_time.values())))
+        if verbose:
+            print("Time taken for "+str(file_name)+"(s):"+str(env_alg_to_time[file_name]))
+
+            print("Time mean:",np.mean(list(env_alg_to_time.values())))
+            print("Time std:",np.std(list(env_alg_to_time.values())))
 
 
         log_info["seed"].append(seed)
