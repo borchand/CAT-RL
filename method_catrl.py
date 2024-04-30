@@ -71,6 +71,7 @@ def train_CAT_RL(
         epsilon: float = 1,
         seed: int = None,
         approach_name: str = "adrl",
+        do_abs_every: int = 500,
         verbose: bool = False
 ):
     """
@@ -161,7 +162,7 @@ def train_CAT_RL(
 
         test_abs_every = 10
         eval_episodes = 100
-        do_abs_every = 500
+
         log = Log_experiments(lp =do_abs_every, ep = eval_episodes)
         agent._acc_reward_data["Num_episodes"] = list()
         agent._acc_reward_data["Cumulative_rewards"] = list()
