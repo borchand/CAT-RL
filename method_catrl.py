@@ -218,7 +218,7 @@ def train_CAT_RL(
     #_______________________________________________________________________________________
             agent = evaluate(i, agent, test_abs_every, step_max, env, abstract)
     #______________________________________________________________________________________
-            if i % do_abs_every == 0  and recent_success < 0.8:
+            if i % do_abs_every == 0  and recent_success < 0.8 and not i == episodes:
                 agent.intialize_eval()
                 batch_con = []
                 batch_abs = []
